@@ -263,6 +263,22 @@ def main() -> int:
             i += 1
             continue
 
+        # DELETE 语句透传：反引号转方括号，并处理字符串转义（支持 IN 列表跨行）
+        if re.match(r"\s*DELETE\s+FROM\s+`", line, flags=re.IGNORECASE):
+            buf = [line]
+            # 未以分号结尾时继续吞并后续行（如 IN 列表跨行）
+            while not buf[-1].rstrip().endswith(";") and i + 1 < len(lines):
+                i += 1
+                buf.append(lines[i])
+            merged = "".join(buf)
+            merged = re.sub(r"`([^`]+)`", r"[\1]", merged)
+            merged = convert_mysql_string_escapes_to_tsql(merged)
+            if not merged.endswith("\n"):
+                merged += "\n"
+            sys.stdout.write(merged)
+            i += 1
+            continue
+
         i += 1
 
     return 0

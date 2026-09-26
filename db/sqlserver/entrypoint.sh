@@ -45,4 +45,10 @@ python3 /work/convert_mysql_to_sqlserver.py /work/jeecgboot-mysql-5.7.sql > /tmp
 echo "Applying schema to ${MSSQL_DB}... (this may take a few minutes)"
 "${SQLCMD_BIN}" -S "${MSSQL_HOST},${MSSQL_PORT}" -U "${MSSQL_USER}" -P "${MSSQL_PASSWORD}" -C -d "${MSSQL_DB}" -b -f 65001 -i /tmp/jeecgboot-sqlserver.sql
 
+echo "Converting device archive incremental script to SQL Server..."
+python3 /work/convert_mysql_to_sqlserver.py /work/device_archive.sql > /tmp/device-archive-sqlserver.sql
+
+echo "Applying device archive schema and cleaning demo menus..."
+"${SQLCMD_BIN}" -S "${MSSQL_HOST},${MSSQL_PORT}" -U "${MSSQL_USER}" -P "${MSSQL_PASSWORD}" -C -d "${MSSQL_DB}" -b -f 65001 -i /tmp/device-archive-sqlserver.sql
+
 echo "Database initialization finished."

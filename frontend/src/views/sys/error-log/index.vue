@@ -32,7 +32,7 @@
   import { useMessage } from '/@/hooks/web/useMessage';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useErrorLogStore } from '/@/store/modules/errorLog';
-  import { fireErrorApi } from '/@/api/demo/error';
+  import { defHttp } from '/@/utils/http/axios';
   import { getColumns } from './data';
   import { cloneDeep } from 'lodash-es';
 
@@ -83,6 +83,7 @@
   }
 
   async function fireAjaxError() {
-    await fireErrorApi();
+    // 触发一个必然失败的请求，用于验证错误日志捕获
+    await defHttp.get({ url: '/error/404-not-exist' }, { errorMessageMode: 'none' });
   }
 </script>
